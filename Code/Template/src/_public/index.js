@@ -1,8 +1,7 @@
 import io from "socket.io-client"
 import "./app.css"
 import {configs} from "../_server/static/configs.js"
-import {draw_barchart} from "./barchart.js"
-import {draw_scatterplot} from "./scatterplot.js"
+import { drawPCP } from "./pcp.js"
 import * as d3 from "d3"
 
 let hostname = window.location.hostname
@@ -63,6 +62,13 @@ let requestDataByCategory = (parameters) => {
   });
 };
 
+// 
+
+// document.addEventListener("DOMContentLoaded", function() {
+//   document.getElementById("minmax").onclick = () => {
+//     getMinMax();
+//   }
+// });
 
 
 // document.addEventListener("DOMContentLoaded", function() {
@@ -94,8 +100,7 @@ let requestDataByCategory = (parameters) => {
  * Object, that will store the loaded data.
  */
 let data = {
-  barchart: undefined,
-  scatterplot: undefined,
+  pcp : undefined,
 }
 
 /**
@@ -109,42 +114,27 @@ let handleData = (payload) => {
   // Here, the barchart shows two bars
   // So the data is preprocessed accordingly
 
-  let count_too_much_weight = 0
-  let count_good_weight = 0
-
-  for (let person of payload.data) {
-    if (person.bmi >= 25) {
-      count_too_much_weight++
-    } else {
-      count_good_weight++
-    }
-  }
-
-  data.barchart = [count_too_much_weight, count_good_weight]
-  data.scatterplot = payload.data
-  draw_barchart(data.barchart)
-  draw_scatterplot(data.scatterplot)
-}
+  
 
 socket.on("freshData", handleData)
+}
+// let width = 0
+// let height = 0
 
-let width = 0
-let height = 0
-
-/**
- * This is an example for visualizations, that are not automatically scalled with the viewBox attribute.
- *
- * IMPORTANT:
- * The called function to draw the data must not do any data preprocessing!
- * To much computational load will result in stuttering and reduced responsiveness!
- */
-let checkSize = setInterval(() => {
-  let container = d3.select(".visualizations")
-  let newWidth = parseInt(container.style("width"))
-  let newHeight = parseInt(container.style("height"))
-  if (newWidth !== width || newHeight !== height) {
-    width = newWidth
-    height = newHeight
-    if (data.scatterplot) draw_scatterplot(data.scatterplot)
-  }
-}, 100)
+// /**
+//  * This is an example for visualizations, that are not automatically scalled with the viewBox attribute.
+//  *
+//  * IMPORTANT:
+//  * The called function to draw the data must not do any data preprocessing!
+//  * To much computational load will result in stuttering and reduced responsiveness!
+//  */
+// let checkSize = setInterval(() => {
+//   let container = d3.select(".visualizations")
+//   let newWidth = parseInt(container.style("width"))
+//   let newHeight = parseInt(container.style("height"))
+//   if (newWidth !== width || newHeight !== height) {
+//     width = newWidth
+//     height = newHeight
+//     if (data.scatterplot) draw_scatterplot(data.scatterplot)
+//   }
+// }, 100)

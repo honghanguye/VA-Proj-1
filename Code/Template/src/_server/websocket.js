@@ -56,34 +56,8 @@ export function setupConnection(socket) {
     )
   })
 
-  socket.on("getMinMax", (obj) => {
-    console.log(`Data request with properties ${JSON.stringify(obj)}...`)
-
-    let parameters = obj.parameters
-
-    let jsonArray = []
-
-    // This is reading the .csv file line by line
-    // So we can filter it line by line
-    // This saves a lot of RAM and processing time
-    fs.readFile(file_path + file_name, "utf8", (err, data) => {
-      if (err) {
-        console.error(err)
-        return
-      }
-      jsonArray = JSON.parse(data)
-
-      let minMax = getMinMax(jsonArray, parameters)
-     
-      socket.emit("MinMax", {
-        timestamp: new Date().getTime(),
-        data: minMax,
-        parameters: parameters,
-      })
-      console.log("Data by category:", minMax);
-    }
-    )
-  }
+  
+  
 
   
 

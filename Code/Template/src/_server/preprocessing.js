@@ -101,13 +101,7 @@ export function selectGamesByMechanic(games, mechanic) {
   
 }
 
-export function minValue(data, attribute) {
-  return Math.min(...data.map(d => d[attribute]));
-}
 
-export function maxValue(data, attribute) {
-  return Math.max(...data.map(d => d[attribute]));
-}
 
 
 
