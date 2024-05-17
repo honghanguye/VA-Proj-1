@@ -38,19 +38,8 @@ head,
 
 .visualizations {
   grid-area: visualizations;
-
-  display: grid;
-  grid-template-columns: 50% auto;
-  grid-template-rows: auto;
-  grid-template-areas: "barchart scatterplot";
-}
-
-.barchart {
-  grid-area: barchart;
-}
-
-.scatterplot {
-  grid-area: scatterplot;
+  background: rgb(255, 255, 255);
+  padding: 20px;
 }
 
 .button {

@@ -1,31 +1,87 @@
-import * as d3 from 'd3';
+import * as d3 from "d3";
 
-export function drawPCP(data) {
+
+
+function drawPcp(data) {
+
     const margin = {
         top: 50,
         bottom: 50,
         left: 50,
-        right: 50,
-    };
-    let width = parseInt(svg.style("width"));
-    let height = parseInt(svg.style("height"));
+        right: 50
+      };
+      const width = 1000;
+      const height = 400;
+      
+      const attributes = [
+        { name: "year", range: [1995, 2021] },
+        { name: "minplayers", range: [1, 3] },
+        { name: "maxplayers", range: [2, 8] },
+        { name: "minplaytime", range: [5, 240] },
+        { name: "maxplaytime", range: [20, 1000] }, 
+        { name: "minage", range: [8, 17] },
+        { name: "rating", range: [7, 9] },
+        { name: "num_of_reviews", range: [5157, 96512] }
+      ];
+  // Unnest the nested data
+  data = data.map(game => ({
+    ...game,
+    rating: game.rating.rating,
+    num_of_reviews: game.rating.num_of_reviews
+  }));
 
+  const xScale = d3.scalePoint()
+    .domain(attributes.map(d => d.name))
+    .range([margin.left, width - margin.right]);
 
-    svg.attr("viewBox", `0 0 ${width} ${height}`);
-    const attributes = ["Year", "Min Players", "Max Players", "Min Playtime", "Max Playtime", "Min Age"];
-    x = d3.scalePoint(attributes, [margin.left, width - margin.right]);
+  const yScales = {};
+  attributes.forEach(d => {
+    yScales[d.name] = d3.scaleLinear()
+      .domain(d.range)
+      .range([height - margin.bottom, margin.top]); // Corrected y range
+  });
 
-y ={
-    "Year": d3.scaleLinear().domain([1995, 2021]).range([margin.top, height - margin.bottom]),
-    "Min Players": d3.scaleLinear().domain([1, 3]).range([margin.top, height - margin.bottom]),
-    "Max Players": d3.scaleLinear().domain([2, 8]).range([margin.top, height - margin.bottom]),
-    "Min Playtime": d3.scaleLinear().domain([5, 240]).range([margin.top, height - margin.bottom]),
-    "Max Playtime": d3.scaleLinear().domain([20, 1000]).range([margin.top, height - margin.bottom]),
-    "Min Age": d3.scaleLinear().domain([5, 18]).range([margin.top, height - margin.bottom])
-};
+  const lineGenerator = d3.line();
+  const linePath = function (d) {
+    const points = attributes.map(attr => [xScale(attr.name), yScales[attr.name](d[attr.name])]);
+    return lineGenerator(points);
+  };
 
+  // Clear any existing SVG
+  d3.select(".pcp").selectAll("*").remove();
 
+  const pcp = d3.select(".pcp")
+    .append("svg")
+    .attr("width", width)
+    .attr("height", height);
 
+  pcp.append("g")
+    .selectAll("path")
+    .data(data)
+    .enter()
+    .append("path")
+    .attr("d", d => linePath(d))
+    .attr("fill", "none")
+    .attr("stroke", "steelblue")
+    .attr("stroke-width", 1);
+
+  const featureAxisG = pcp.selectAll('g.feature')
+    .data(attributes)
+    .enter()
+    .append('g')
+    .attr('class', 'feature')
+    .attr('transform', d => `translate(${xScale(d.name)},0)`);
+
+  featureAxisG.append('g')
+    .each(function (d) {
+      d3.select(this).call(d3.axisLeft(yScales[d.name]));
+    });
+
+  featureAxisG.append('text')
+    .attr('y', height - margin.bottom)
+    .attr('dy', '1em')
+    .style('text-anchor', 'middle')
+    .text(d => d.name);
 }
 
-}
+export { drawPcp };
