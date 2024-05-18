@@ -101,7 +101,27 @@ export function selectGamesByMechanic(games, mechanic) {
   
 }
 
+export function in_top_10_popular_categories(game){
+  top_10_categories =['Economy','Fantasy','Science Fiction','Adventure',     'Fighting','Card Game','Exploration','Miniatures','Medieval','Industry/Manufacturing']
+  return game.types.categories.some(cat => top_10_categories.includes(cat.name));
+}
 
+export function in_top_10_popular_mechanics(game){
+  let top_10_mechanics = [
+    'Hand Management',
+    'Solo / Solitaire Game',
+    'Variable Player Powers',
+    'Variable Set-up',
+    'Worker Placement',
+    'Dice Rolling',
+    'End Game Bonuses',
+    'Open Drafting',
+    'Set Collection',
+    'Cooperative Game'
+];
+  return game.types.mechanics.some(mech => top_10_mechanics.includes(mech.name));
+}
+ 
 
 
 

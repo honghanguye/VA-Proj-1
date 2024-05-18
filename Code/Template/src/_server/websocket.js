@@ -4,7 +4,7 @@ import * as fs from "fs"
 import { print_clientConnected, print_clientDisconnected } from "./static/utils.js"
 // const preprocessing = require("./preprocessing.js")
 import { is_below_max_weight, parse_numbers, calc_bmi } from "./preprocessing.js"
-import { filterTopRankedGames, selectGamesByCategory, selectGamesByMechanic } from "./preprocessing.js";
+import { filterTopRankedGames, selectGamesByCategory, selectGamesByMechanic,in_top_10_popular_categories, in_top_10_popular_mechanics } from "./preprocessing.js";
 import { getExampleLDA } from "./druidExample.js";
 
 const file_path = "./data/"
