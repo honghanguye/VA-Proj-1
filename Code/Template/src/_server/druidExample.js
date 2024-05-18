@@ -1,24 +1,25 @@
 import * as druid from "@saehrimnir/druidjs";
 
-export function getExampleLDA() {
-  //you likely want to preprocess the data and load it in from the server.
-  let numberData = [
-    [1, 3, 3, 4, 5],
-    [1, 2, 3, 24, 5],
-    [1, 24, 3, 4, 2],
-    [1, 2, 36, 5, 5],
-    [1, 21, 3, 4, 5],
-    [12, 2, 3, 7, 5]
-  ]
+export function LDA(data,useClasses = true) {
+  data = data.map(game => ({
+    ...game,
+    rating: game.rating.rating,
+    num_of_reviews: game.rating.num_of_reviews
+  }));
 
-  let classes = ["a", "a", "b", "b", "a", "a"]
+  const numberData = data.map(game => {
+    return [game.year, game.minplayers, game.maxplayers, game.minplaytime, game.maxplaytime, game.minage, game.rating, game.num_of_reviews]
+  });
+  const classes = data.map(game => game.in_top_10_cat);
+  const classes_2 = data.map(game => game.in_top_10_mech);
+  const labels = useClasses ? classes : classes_2;
 
   const X = druid.Matrix.from(numberData); // X is the data as object of the Matrix class.
 
   //https://saehm.github.io/DruidJS/LDA.html
-  const reductionLDA = new druid.LDA(X, { labels: classes, d: 2 }) //2 dimensions, can use more.
+  const reductionLDA = new druid.LDA(X, { labels: labels, d: 2 }) //2 dimensions, can use more.
   const result = reductionLDA.transform()
 
-  console.log(result.to2dArray) //convenience method: https://saehm.github.io/DruidJS/Matrix.html
+  return result;
 };
 

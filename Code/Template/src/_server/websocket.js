@@ -4,8 +4,8 @@ import * as fs from "fs"
 import { print_clientConnected, print_clientDisconnected } from "./static/utils.js"
 // const preprocessing = require("./preprocessing.js")
 import { is_below_max_weight, parse_numbers, calc_bmi } from "./preprocessing.js"
-import { filterTopRankedGames, selectGamesByCategory, selectGamesByMechanic,in_top_10_popular_categories, in_top_10_popular_mechanics } from "./preprocessing.js";
-import { getExampleLDA } from "./druidExample.js";
+import { filterTopRankedGames, selectGamesByCategory, selectGamesByMechanic, in_top_10_popular_categories, in_top_10_popular_mechanics } from "./preprocessing.js";
+import { LDA } from "./druidExample.js";
 
 const file_path = "./data/"
 const file_name = "boardgames_100.json"
@@ -45,7 +45,7 @@ export function setupConnection(socket) {
       jsonArray = JSON.parse(data)
 
       let dataByCategory = selectGamesByCategory(jsonArray, parameters)
-     
+
       socket.emit("DataByCategory", {
         timestamp: new Date().getTime(),
         data: dataByCategory,
@@ -56,10 +56,10 @@ export function setupConnection(socket) {
     )
   })
 
-  
-  
 
-  
+
+
+
 
   /**
    * # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
@@ -87,7 +87,7 @@ export function setupConnection(socket) {
   socket.on("getData", (obj) => {
     console.log(`Data request with properties ${JSON.stringify(obj)}...`)
 
-   
+
 
 
     let parameters = obj.parameters
@@ -108,15 +108,51 @@ export function setupConnection(socket) {
 
       console.log("Data:", filteredData);
       //when all data is ready and processed, send it to the frontend of the socket
-        socket.emit("freshData", {
-          timestamp: new Date().getTime(),
-          data: filteredData,
-          parameters: parameters,
-        })
+      socket.emit("freshData", {
+        timestamp: new Date().getTime(),
+        data: filteredData,
+        parameters: parameters,
       })
-     
-   
+    })
+
+
   })
+
+
+
+
+  socket.on("getLDA", (obj) => {
+    console.log(`Data request with properties ${JSON.stringify(obj)}...`)
+
+    let parameters = obj.parameters
+
+    let jsonArray = []
+    fs.readFile(file_path + file_name, "utf8", (err, data) => {
+      if (err) {
+        console.error(err)
+        return
+      }
+      jsonArray = JSON.parse(data)
+
+      let dataFilter = applyFilters(jsonArray, parameters);
+      // Add class in_top_10_cat
+      in_top_10_popular_categories(dataFilter);
+      in_top_10_popular_mechanics(dataFilter);
+
+      // LDA
+      let lda = LDA(dataFilter, parameters.useClasses);
+
+      socket.emit("getLDA", {
+        timestamp: new Date().getTime(),
+        data: lda,
+        parameters: parameters,
+      })
+
+    }
+    )
+  })
+
+
 }
 
 function applyFilters(data, filters) {
@@ -124,10 +160,10 @@ function applyFilters(data, filters) {
 
   // Apply each filter function
   for (let filterName in filters) {
-      if (filters.hasOwnProperty(filterName)) {
-          const filterValue = filters[filterName];
-          filteredData = applyFilter(filteredData, filterName, filterValue);
-      }
+    if (filters.hasOwnProperty(filterName)) {
+      const filterValue = filters[filterName];
+      filteredData = applyFilter(filteredData, filterName, filterValue);
+    }
   }
 
   return filteredData;
@@ -135,14 +171,14 @@ function applyFilters(data, filters) {
 
 function applyFilter(data, filterName, filterValue) {
   switch (filterName) {
-      case "category":
-          return selectGamesByCategory(data, filterValue);
-      case "top_rank":
-          return filterTopRankedGames(data, filterValue);
-      // Add more cases for additional filters as needed
-      case "mechanic":
-          return selectGamesByMechanic(data, filterValue);
-      default:
-          return data;
+    case "category":
+      return selectGamesByCategory(data, filterValue);
+    case "top_rank":
+      return filterTopRankedGames(data, filterValue);
+    // Add more cases for additional filters as needed
+    case "mechanic":
+      return selectGamesByMechanic(data, filterValue);
+    default:
+      return data;
   }
 }

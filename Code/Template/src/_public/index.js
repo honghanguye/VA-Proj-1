@@ -58,6 +58,8 @@ document.addEventListener("DOMContentLoaded", function() {
     // Call the function to request data based on the selected parameters
     requestData(parameters);
   };
+
+  document.getElementById
 });
 
 /**
