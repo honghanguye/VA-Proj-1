@@ -4,7 +4,9 @@ export function draw_scatterplot(data) {
   data = data.map((d, i) => ({
     x: d[0],
     y: d[1],
-    label: labels[i]
+    label: labels[i],
+    class_1 : classes[i],
+    class_2 : classes_2[i],
   }))
 
   /**
@@ -17,108 +19,96 @@ export function draw_scatterplot(data) {
     right: 50,
   }
 
+  const width = 1050;
+    const height = 500;
+
+
+
+
   /**
    * Selection of svg and groups to be drawn on.
    */
-  let svg = d3.select("#scatterplot_svg")
-  let g_scatterplot = d3.select("#g_scatterplot")
-  let g_x_axis_scatterplot = d3.select("#g_x_axis_scatterplot")
-  let g_y_axis_scatterplot = d3.select("#g_y_axis_scatterplot")
-
-  /**
-   * Getting the current width/height of the whole drawing pane.
-   */
-  let width = parseInt(svg.style("width"))
-  let height = parseInt(svg.style("height"))
-
+  
   /**
    * Scale function for the x-axis
    */
-  const xScale = d3
-    .scaleLinear()
-    .domain([0, d3.max(data.map((d) => d.weight))])
-    .range([0, width - margin.left - margin.right])
+  const xScale = d3.scaleLinear()
+  .domain(d3.extent(data, d => d.x)).nice()
+  .range([margin.left, width - margin.right]);
 
-  /**
-   * Scale unction for the y-axis
-   */
-  const yScale = d3
-    .scaleLinear()
-    .domain([0, d3.max(data.map((d) => d.height))])
-    .range([height - margin.top - margin.bottom, 0])
+  const yScale = d3.scaleLinear()
+  .domain(d3.extent(data, d => d.y)).nice()
+  .range([height - margin.bottom, margin.top]);
 
-  /**
-   * Drawing the data itself as circles
-   */
-  let scatterplot_circle = g_scatterplot
-    .selectAll(".scatterplot_circle")
-    .data(data)
+  const color = d3.scaleOrdinal(data.map(d => d.class_1), d3.schemeCategory10);
+  const symbols = [d3.symbolCircle, d3.symbolCross, d3.symbolDiamond, d3.symbolSquare, d3.symbolStar, d3.symbolTriangle, d3.symbolWye];
+const shape = d3.scaleOrdinal(data.map(d => d.class_2), symbols.map(s => d3.symbol().type(s)()));
 
-  scatterplot_circle
-    .enter()
-    .append("circle")
-    .attr("class", "scatterplot_circle")
-    .merge(scatterplot_circle)
-    .attr("fill", "orange")
-    .attr("r", 5)
-    .attr("cx", (d) => margin.left + xScale(d.weight))
-    .attr("cy", (d) => yScale(d.height) + margin.top)
+const scatterplot = d3.select(".scatterplot_LDA")
+  .append("svg")
+  .attr("width", width)
+  .attr("height", height);
 
-  scatterplot_circle.exit().remove()
+  //append the x-axis
+  scatterplot.append("g")
+  .attr("transform", `translate(0,${height - margin.bottom})`)
+  .call(d3.axisBottom(xScale))
+  .append("text")
+  .attr("fill", "black")
+  .attr("x", width - margin.right)
+  .attr("y", -6)
+  .attr("text-anchor", "end")
+  .text("Dimension 1");
 
-  /**
-   * Drawing the x-axis for the visualized data
-   */
-  let x_axis = d3.axisBottom(xScale)
+  //append the y-axis
+  scatterplot.append("g")
+  .attr("transform", `translate(${margin.left},0)`)
+  .call(d3.axisLeft(yScale))
+  .append("text")
+  .attr("fill", "black")
+  .attr("transform", "rotate(-90)")
+  .attr("y", 6)
+  .attr("dy", "0.71em")
+  .attr("text-anchor", "end")
+  .text("Dimension 2");
 
-  g_x_axis_scatterplot
-    .attr(
-      "transform",
-      "translate(" + margin.left + "," + (height - margin.bottom) + ")"
-    )
-    .call(x_axis)
 
-  /**
-   * Drawing the y-axis for the visualized data
-   */
-  let y_axis = d3.axisLeft(yScale)
+  //append the points
+  scatterplot.selectAll("path")
+  .data(data)
+  .join("path")
+  .attr("transform", d => `translate(${xScale(d.x)},${yScale(d.y)})`)
+  .attr("d", d => shape(d.class_2))
+  .attr("fill", d => color(d.class_1))
+  .attr("stroke", "black")
+  .attr("stroke-width", 1)
+  .attr("stroke-opacity", 0.6)
+  .attr("fill-opacity", 0.6);
 
-  g_y_axis_scatterplot
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-    .call(y_axis)
 
-  /**
-   * Drawing the x-axis label
-   */
-  let x_label = g_scatterplot.selectAll(".x_label").data(["Weight (kg)"])
+  // Create the legend group
+const legend = scatterplot.append("g")
+.attr("transform", `translate(${width - margin.right},${margin.top})`)
+.selectAll("g")
+.data(color.domain())
+.join("g")
+.attr("transform", (d, i) => `translate(0,${i * 20})`);
 
-  x_label
-    .enter()
-    .append("text")
-    .attr("class", "x_label")
-    .merge(x_label)
-    .attr("x", width / 2)
-    .attr("y", height - margin.bottom / 4)
-    .attr("text-anchor", "middle")
-    .text((d) => d)
+// Append the shapes with corresponding colors
+legend.append("path")
+.attr("d", (d, i) => shapes(i))
+.attr("fill", color)
+.attr("transform", "translate(10, 10)");
 
-  x_label.exit().remove()
+// Append the text
+legend.append("text")
+.attr("fill", "black")
+.attr("x", 20)
+.attr("y", 15)
+.text(d => d);
 
-  /**
-   * Drawing the y-axis label
-   */
-  let y_label = g_scatterplot.selectAll(".y_label").data(["Height (cm)"])
 
-  y_label
-    .enter()
-    .append("text")
-    .attr("class", "y_label")
-    .merge(y_label)
-    .attr("x", -height / 2)
-    .attr("y", margin.left / 4)
-    .attr("text-anchor", "middle")
-    .attr("transform", "rotate(-90)")
-    .text((d) => d)
 
-  y_label.exit().remove()
 }
+
+  

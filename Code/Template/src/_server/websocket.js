@@ -118,6 +118,8 @@ export function setupConnection(socket) {
 
   })
 
+  
+
 
 
 
@@ -142,7 +144,7 @@ export function setupConnection(socket) {
       // LDA
       let lda = LDA(dataFilter, parameters);
 
-      socket.emit("getLDA", {
+      socket.emit("freshLDA", {
         timestamp: new Date().getTime(),
         data: lda,
         parameters: parameters,

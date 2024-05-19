@@ -2,7 +2,7 @@ import io from "socket.io-client";
 import "./app.css";
 import { configs } from "../_server/static/configs.js";
 import { drawPcp } from "./newpcp.js";
-
+import { draw_scatterplot } from "./scatterplot.js";
 import * as d3 from "d3";
 
 let hostname = window.location.hostname;
@@ -35,8 +35,13 @@ let requestLDA = (parameters) =>{
 }
 
 let handleLDA = (payload) =>{
+  console.log("Data received from server:", payload);
+ldaData.scatterplot = payload.data;
+draw_scatterplot(ldaData.scatterplot);
 
-}
+
+};
+socket.on("freshLDA", handleLDA);
 
 
 
@@ -76,12 +81,16 @@ document.addEventListener("DOMContentLoaded", function() {
     const selectElement = document.getElementById("classes");
     const setClass = selectElement.value;
     const parameters = { setClass };
+    requestLDA(parameters);
 };
 });
 
 /**
  * Object that will store the loaded data.
  */
+let ldaData ={
+  scatterplot : undefined,
+};
 let data = {
   pcp: undefined,
 };
