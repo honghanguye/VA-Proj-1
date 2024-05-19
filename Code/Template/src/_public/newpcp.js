@@ -34,9 +34,13 @@ function drawPcp(data) {
 
     const yScales = {};
     attributes.forEach(d => {
-        yScales[d.name] = d3.scaleLinear()
+        
+            yScales[d.name] = d3.scaleLinear()
             .domain(d.range)
             .range([height - margin.bottom, margin.top]); // Corrected y range
+
+        
+        
     });
 
     const lineGenerator = d3.line();

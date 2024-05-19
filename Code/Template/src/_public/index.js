@@ -2,7 +2,7 @@ import io from "socket.io-client";
 import "./app.css";
 import { configs } from "../_server/static/configs.js";
 import { drawPcp } from "./newpcp.js";
-import {scatter}
+
 import * as d3 from "d3";
 
 let hostname = window.location.hostname;
