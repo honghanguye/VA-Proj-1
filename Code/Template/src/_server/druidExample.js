@@ -20,6 +20,12 @@ export function LDA(data,useClasses = true) {
   const reductionLDA = new druid.LDA(X, { labels: labels, d: 2 }) //2 dimensions, can use more.
   const result = reductionLDA.transform()
 
+  const resultData = result.map((d, i) => ({
+    x: d[0],
+    y: d[1],
+    label: labels[i]
+  }))
+
   return result;
 };
 

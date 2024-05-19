@@ -140,7 +140,7 @@ export function setupConnection(socket) {
       in_top_10_popular_mechanics(dataFilter);
 
       // LDA
-      let lda = LDA(dataFilter, parameters.useClasses);
+      let lda = LDA(dataFilter, parameters);
 
       socket.emit("getLDA", {
         timestamp: new Date().getTime(),

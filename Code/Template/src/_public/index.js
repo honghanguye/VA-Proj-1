@@ -2,6 +2,7 @@ import io from "socket.io-client";
 import "./app.css";
 import { configs } from "../_server/static/configs.js";
 import { drawPcp } from "./newpcp.js";
+import {scatter}
 import * as d3 from "d3";
 
 let hostname = window.location.hostname;
@@ -26,6 +27,18 @@ let requestData = (parameters) => {
   console.log(`Requesting data from webserver with parameters:`, parameters);
   socket.emit("getData", { parameters });
 };
+
+
+let requestLDA = (parameters) =>{
+  console.log(`Requesting data with this parameters: `, parameters)
+  socket.emit("getLDA",{parameters});
+}
+
+let handleLDA = (payload) =>{
+
+}
+
+
 
 /**
  * Handle data received from the server.
@@ -59,7 +72,11 @@ document.addEventListener("DOMContentLoaded", function() {
     requestData(parameters);
   };
 
-  document.getElementById
+  document.getElementById("load_data_button2").onclick = () => {
+    const selectElement = document.getElementById("classes");
+    const setClass = selectElement.value;
+    const parameters = { setClass };
+};
 });
 
 /**

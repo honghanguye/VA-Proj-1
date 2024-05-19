@@ -1,8 +1,11 @@
 import * as d3 from "d3"
 
 export function draw_scatterplot(data) {
-  console.log("draw scatterplot")
-  console.log(data)
+  data = data.map((d, i) => ({
+    x: d[0],
+    y: d[1],
+    label: labels[i]
+  }))
 
   /**
    * Margins of the visualization.
