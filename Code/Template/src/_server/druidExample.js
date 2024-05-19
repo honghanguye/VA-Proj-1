@@ -23,7 +23,9 @@ export function LDA(data,useClasses = true) {
   const resultData = result.map((d, i) => ({
     x: d[0],
     y: d[1],
-    label: labels[i]
+    label: labels[i],
+    class_1 : classes[i],
+    class_2 : classes_2[i],
   }))
 
   return result;
