@@ -4,7 +4,7 @@ import * as fs from "fs"
 import { print_clientConnected, print_clientDisconnected } from "./static/utils.js"
 // const preprocessing = require("./preprocessing.js")
 import { is_below_max_weight, parse_numbers, calc_bmi } from "./preprocessing.js"
-import { filterTopRankedGames, selectGamesByCategory, selectGamesByMechanic, in_top_10_popular_categories, in_top_10_popular_mechanics } from "./preprocessing.js";
+import { filterTopRankedGames, selectGamesByCategory, selectGamesByMechanic, in_top_5_popular_categories, in_top_5_popular_mechanics } from "./preprocessing.js";
 import { LDA } from "./druidExample.js";
 
 const file_path = "./data/"
@@ -106,8 +106,7 @@ export function setupConnection(socket) {
 
       let filteredData = applyFilters(jsonArray, parameters);
 
-      console.log("Data:", filteredData);
-      //when all data is ready and processed, send it to the frontend of the socket
+      
       socket.emit("freshData", {
         timestamp: new Date().getTime(),
         data: filteredData,
@@ -138,11 +137,11 @@ export function setupConnection(socket) {
 
       let dataFilter = applyFilters(jsonArray, parameters);
       // Add class in_top_10_cat
-      in_top_10_popular_categories(dataFilter);
-      in_top_10_popular_mechanics(dataFilter);
+      in_top_5_popular_categories(dataFilter);
+      in_top_5_popular_mechanics(dataFilter);
 
       // LDA
-      let lda = LDA(dataFilter, parameters);
+      let lda = LDA(dataFilter, parameters.setClass);
 
       socket.emit("freshLDA", {
         timestamp: new Date().getTime(),

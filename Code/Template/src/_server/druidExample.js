@@ -7,37 +7,66 @@ export function LDA(data, useClasses) {
     num_of_reviews: game.rating.num_of_reviews
   }));
 
-  const numberData = data.map(game => [
-    game.year, game.minplayers, game.maxplayers, game.minplaytime,
+  let numberData = data.map(game => [
+    game.year,game.minplayers, game.maxplayers, game.minplaytime,
     game.maxplaytime, game.minage, game.rating, game.num_of_reviews
   ]);
 
-  console.log("numberData", numberData);
+  //normalize numberData
+  for (let i = 0; i < numberData[0].length; i++) {
+    let column = numberData.map(row => row[i]);
+    let min = Math.min(...column);
+    let max = Math.max(...column);
+    numberData = numberData.map(row => {
+      row[i] = (row[i] - min) / (max - min);
+      return row;
+    });
+  }
+  console.log("data", data);
   
-  const classes = data.map(game => game.in_top_10_cat);
-  const classes_2 = data.map(game => game.in_top_10_mech);
-  const labels = useClasses ? classes : classes_2;
-  console.log("classes", labels);
+  const classes = data.map(game => game.in_top_5_cat);
+  const classes_2 = data.map(game => game.in_top_5_mech);
+const title = data.map(game => game.title);
+
+  
+  let labels;
+  if (useClasses === "categoriesClass") {
+    labels = classes;
+  } else {
+    labels = classes_2;
+  }
+
 
   const X = druid.Matrix.from(numberData); // X is the data as object of the Matrix class.
 
   //https://saehm.github.io/DruidJS/LDA.html
-  const reductionLDA = new druid.LDA(X, { labels: labels, d: 2 }); // 2 dimensions, can use more.
+  const reductionLDA = new druid.LDA(X, { labels: labels, d: 2, seed:1212 }); // 2 dimensions, can use more.
   const result = reductionLDA.transform();
-  console.log("result", result);
+  console.log("LDA Result:", result);
 
-
-  if (!Array.isArray(result)) {
-    throw new Error("LDA transform did not return an array");
+  if (!(result instanceof druid.Matrix)) {
+    throw new Error("LDA transform did not return a Matrix instance");
   }
 
-  // const resultData = result.map((d, i) => ({
-  //   x: d[0],
-  //   y: d[1],
-  //   label: labels[i],
-  //   class_1: classes[i],
-  //   class_2: classes_2[i],
-  // }));
 
-  return result;
+  // Convert Matrix to array
+  const rows = result._rows;
+  const cols = result._cols;
+  const dataArray = [];
+  for (let i = 0; i < rows; i++) {
+    const row = [];
+    for (let j = 0; j < cols; j++) {
+      row.push(result._data[i * cols + j]);
+    }
+    row.push(classes[i]);
+    row.push(classes_2[i]);
+    row.push(title[i]);
+    dataArray.push(row);
+  }
+
+  console.log("Transformed Data Array:", dataArray);
+
+  // Transform the array into the desired format
+  
+  return dataArray;
 }

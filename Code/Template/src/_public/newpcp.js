@@ -4,11 +4,11 @@ function drawPcp(data) {
     const margin = {
         top: 50,
         bottom: 50,
-        left: 50,
-        right: 50
+        left: 80,
+        right: 80
     };
     const width = 1050;
-    const height = 500;
+    const height = d3.select(".pcp").node().getBoundingClientRect().height;
 
     const attributes = [
         { name: "year", range: [1995, 2021] },
@@ -66,32 +66,30 @@ function drawPcp(data) {
         const gameNameDiv = d3.select(".pcp").append("div")
         .attr("class", "tooltip")
         .style("opacity", 0)
-        .style("background-color", "white")
+        .style("background-color", "lightblue")
         .style("border", "solid")
         .style("border-width", "1px")
-        .style("border-radius", "5px");
+        .style("border-radius", "5px")
+        .style("padding", "5px")
+        .style("position", "absolute")
+        .style("pointer-events", "none");
 
-        function handleMouseOver(d) {
-            d3.select(this).attr("stroke", "orange");
-            // const [x, y] = d3.pointer(event, pcp.node()); // Get mouse position relative to the SVG container
-            // const nearest = quadtree.find(x, y); // Find the nearest data point
-            
-                gameNameDiv
-                d3.select(this)
-                .style("opacity", 1)
-                .html(d.title)
-                ;
-            
-        }
+    function handleMouseOver(event, d) {
+        d3.select(this).attr("stroke", "orange");
         
+        gameNameDiv.transition().duration(200).style("opacity", 1);
+        gameNameDiv.html(`
+            <strong>Title:</strong> ${d.title}<br>
+            <strong>Rank:</strong> ${d.rank}<br>
+            
+        `)
+        .style("left", (event.pageX + 10) + "px")
+        .style("top", (event.pageY - 28) + "px");
+    }
 
-        
-        
     function handleMouseOut(d) {
         d3.select(this).attr("stroke", "steelblue");
-        gameNameDiv.transition()
-            .duration(500)
-            .style("opacity", 0);
+        gameNameDiv.transition().duration(500).style("opacity", 0);
     }
 
 
@@ -103,7 +101,7 @@ function drawPcp(data) {
         .attr("d", d => linePath(d))
         .attr("fill", "none")
         .attr("stroke", "steelblue")
-        .attr("stroke-width", 1.5)
+        .attr("stroke-width", 1)
         .on("mouseover", handleMouseOver)
         .on("mouseout", handleMouseOut);
 
@@ -123,7 +121,26 @@ function drawPcp(data) {
         .attr('y', height - margin.bottom)
         .attr('dy', '1em')
         .style('text-anchor', 'middle')
-        .text(d => d.name);
+        .text(function(d) {
+            switch (d.name) {
+                case "year":
+                    return "Year";
+                case "minplayers":
+                    return "Min Players";
+                case "maxplayers":
+                    return "Max Players";
+                case "minplaytime":
+                    return "Min Playtime";
+                case "maxplaytime":
+                    return "Max Playtime";
+                case "minage":
+                    return "Min Age";
+                case "rating":
+                    return "Rating";
+                case "num_of_reviews":
+                    return "Number of Reviews";
+            }
+        });
 
 
        

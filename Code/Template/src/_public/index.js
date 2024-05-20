@@ -59,32 +59,38 @@ socket.on("freshData", handleData);
 
 document.addEventListener("DOMContentLoaded", function() {
   document.getElementById("load_data_button").onclick = () => {
-    // Get the selected category
     const categoryElement = document.getElementById("category");
     const category = categoryElement ? categoryElement.value : null;
 
-    // Get the selected top_rank
     const topRankedElement = document.getElementById("top_rank");
     const top_rank = topRankedElement ? parseInt(topRankedElement.value) : Infinity;
 
-    // Get the selected mechanic
     const mechanicElement = document.getElementById("mechanic");
     const mechanic = mechanicElement ? mechanicElement.value : null;
 
     const parameters = { top_rank, category, mechanic };
 
-    // Call the function to request data based on the selected parameters
     requestData(parameters);
   };
 
   document.getElementById("load_data_button2").onclick = () => {
     const selectElement = document.getElementById("classes");
     const setClass = selectElement.value;
-    const parameters = { setClass };
-    requestLDA(parameters);
-};
-});
 
+    const categoryElement = document.getElementById("category");
+    const category = categoryElement ? categoryElement.value : null;
+
+    const topRankedElement = document.getElementById("top_rank");
+    const top_rank = topRankedElement ? parseInt(topRankedElement.value) : Infinity;
+
+    const mechanicElement = document.getElementById("mechanic");
+    const mechanic = mechanicElement ? mechanicElement.value : null;
+
+    const parameters = { top_rank, category, mechanic, setClass };
+
+    requestLDA(parameters);
+  };
+});
 /**
  * Object that will store the loaded data.
  */

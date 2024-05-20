@@ -20,6 +20,8 @@ head,
 
   grid-template-areas: "banner banner" "sidepanel visualizations";
   margin:auto;
+  min-height: 100vh ;
+  
 
 }
 
@@ -42,6 +44,25 @@ head,
   grid-area: visualizations;
   background: rgb(255, 255, 255);
   padding: 20px;
+  overflow: auto ;
+  display: grid;
+  grid-template-rows: 50% 50%;
+  grid-template-areas: "pcp" "scatterplot";
+}
+
+.pcp {
+  grid-area: pcp;
+  justify-self: center;
+  
+  margin: 10px;
+  
+}
+
+.scatterplot_LDA {
+  grid-area: scatterplot;
+  justify-self: center;
+ 
+  margin: 10px;
 }
 
 .button {
@@ -54,6 +75,9 @@ head,
     font-weight: bold;
 
     cursor: pointer;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    
 }
 
 .button:hover {
