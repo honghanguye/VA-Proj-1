@@ -1,3 +1,5 @@
+
+
 html,
 body,
 head,
@@ -11,14 +13,33 @@ head,
 
   overflow: hidden;
 }
+/* styles.css */
+:root {
+  /* CSS HEX */
+--cerulean: #2d728fff;
+--blue-munsell: #3b8ea5ff;
+--vanilla: #f5ee9eff;
+--sandy-brown: #f49e4cff;
+--fire-brick: #ab3428ff;
+
+/* CSS HSL */
+--cerulean: hsla(198, 52%, 37%, 1);
+--blue-munsell: hsla(193, 47%, 44%, 1);
+--vanilla: hsla(55, 81%, 79%, 1);
+--sandy-brown: hsla(29, 88%, 63%, 1);
+--fire-brick: hsla(5, 62%, 41%, 1);
+
+
+}
+
 
 #root {
 
   display: grid;
-  grid-template-columns: 20% 80%;
-  grid-template-rows: 70px auto;
+  grid-template-rows: 80px auto;
 
-  grid-template-areas: "banner banner" "sidepanel visualizations";
+  grid-template-areas: "banner banner" "slides slides"; 
+                      
   margin:auto;
   min-height: 100vh ;
   
@@ -27,69 +48,207 @@ head,
 
 .banner {
   grid-area: banner;
-  background-color:#3d5a80ff;
-  border: #ccc 1px solid;
-  text-align: center;
-  font-weight: bold;
-  color: white;
-  font-family: Verdana, Geneva, Tahoma, sans-serif;
-}
-
-.sidepanel {
-  grid-area: sidepanel;
-  border: #ccc 1px solid;
-  padding: 20px;
-}
-.visualizations {
-  grid-area: visualizations;
-  background: rgb(255, 255, 255);
-  padding: 20px;
-  overflow: auto ;
   display: grid;
-  grid-template-rows: 50% 50%;
-  grid-template-areas: "pcp" "scatterplot";
-}
+  grid-template-columns: 60% 40%;
+  grid-template-areas: "title nav";
+  background-color: var(--vanilla);
+  .title {
+    grid-area: title;
+    font-size: 2em;
+    font-weight: bold;
+    margin-left: 300px;
+    color: black;
+    stroke: black;
 
-.pcp {
-  grid-area: pcp;
-  justify-self: center;
-  
-  margin: 10px;
-  
-}
+  }
 
-.scatterplot_LDA {
-  grid-area: scatterplot;
-  justify-self: center;
- 
-  margin: 10px;
+  
+  
+  ul {
+    grid-area: nav;
+		list-style: none;
+		text-align: center;
+    justify-content: end;
+
+		li {
+			display: inline-block;
+			height: 50px;
+			width: 80px;
+
+			text-align: center;
+			font-family: "open sans";
+      
+      font-weight: bold;
+			line-height: 48px;
+
+			padding: 0 20px 0 20px;
+      background-color: var(--blue-munsell);
+      color: black;
+      border-radius: 10px;
+
+			&:hover {
+				background-color: var(--fire-brick);
+				color: white;
+				cursor: pointer;
+			}
+
+			&.current {
+				background-color: var(--fire-brick);
+				color: white;
+			}
+		}
+	}
+}
+#slides {
+  grid-area: slides;
+  
+  
+  
+
+	nav {
+		font-size: 100px;
+
+		position: absolute;
+		left: 90%;
+		top: 80%;
+		color: var(--blue-munsell);
+		z-index: 100;
+
+		i {
+			cursor: pointer;
+			opacity: 0.2;
+
+			transition: all 0.5s;
+		}
+	}
+  .slide {
+    width: 100%;
+    height: 100%;
+   
+    transition: transform 1s;
+  
+    
+    }
+  .slide0{
+   
+    position: relative;
+    display: grid;
+    grid-template-columns: 20% 80%;
+    grid-template-areas: "sidepanel visualizations";
+
+    .sidepanel {
+      background-color: var(--blue-munsell);
+      color: white;
+      grid-area: sidepanel;
+      border: #ccc 1px solid;
+      padding: 20px;
+    }
+    
+    
+    
+    
+  .visualizations_1 {
+    
+    grid-area: "visualizations";
+    background: rgb(255, 255, 255);
+    padding: 20px;
+    overflow: auto ;
+    
+    .pcp {
+     
+      justify-self: center;
+      height: 50%;
+      margin: 10px;
+      
+    }
+    
+    .scatterplot_LDA {
+      
+      justify-self: center;
+     height: 50%;
+      margin: 10px;
+    }
+    
+  }
+  
+  
+  
+  }
+  .slide1{
+    background-color: blueviolet;
+    display: none;
+    position: relative;
+    display: grid;
+    grid-template-columns: 20% 80%;
+    grid-template-areas: "sidepanel visualizations";
+
+    .sidepanel_1 {
+      background-color: var(--blue-munsell);
+      color: white;
+      grid-area: sidepanel;
+      border: #ccc 1px solid;
+      padding: 20px;
+    }
+    
+    
+    
+    
+  .visualizations_2 {
+    
+    grid-area: "visualizations";
+    background: rgb(255, 255, 255);
+    padding: 20px;
+    overflow: auto ;
+  }
+
+
+  }
+  .slide2{
+    background-color: greenyellow;
+    display: none;
+  }
+  .slide3{
+    background-color: turquoise;
+    display: none;
+  }
+  
 }
 
 .button {
-    /* 300px: width if the sidepanel defined in the grid-template for #root */
-    /* 40px = 2 times 20px padding in .sidepanel */
-    width: calc(300px - 40px);
-    border-radius: 20px;
-    height: 50px;
-    font-size: 1.2em;
-    font-weight: bold;
+  /* 300px: width if the sidepanel defined in the grid-template for #root */
+  /* 40px = 2 times 20px padding in .sidepanel */
+  width: calc(300px - 40px);
+  border-radius: 20px;
+  height: 50px;
+  font-size: 1.2em;
+  font-weight: bold;
+  border: none;
+  background: var(--sandy-brown);
+  color: black;
 
-    cursor: pointer;
-    margin-top: 20px;
-    margin-bottom: 20px;
-    
+  cursor: pointer;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  
 }
 
 .button:hover {
-    background: rgb(180, 180, 180);
+  background: var(--fire-brick);
+  color: white;
 }
 
 input[type=text], select {
-    width: 100%;
-    padding: 12px 20px;
-    margin: 8px 0;
-    display: inline-block;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-  }
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+
+
+
+
+

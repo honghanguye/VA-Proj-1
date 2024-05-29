@@ -103,7 +103,7 @@ export function selectGamesByMechanic(games, mechanic) {
 
 export function in_top_5_popular_categories(games) {
   const top_5_categories = [
-    'Economy', 'Fantasy', 'Science Fiction', 'Adventure', 'Fighting'
+    'Economic', 'Fantasy', 'Science Fiction', 'Adventure', 'Fighting'
   ];
 
   games.forEach(game => {
@@ -123,6 +123,43 @@ export function in_top_5_popular_mechanics(games){
   games.forEach(game => {
     game.in_top_5_mech = game.types.mechanics.some(mech => top_5_mechanics.includes(mech.name));
   });
+}
+
+export function removeColumnsWithMissingValues(data){
+  // if a column has under 990 non null values, remove it
+  const threshold = 990;
+  let columns = data.columns;
+  let rows = data.rows;
+  let columnsToRemove = [];
+  columns.forEach(column => {
+    let nonNullValues = rows.filter(row => row[column] !== null).length;
+    if(nonNullValues < threshold){
+      columnsToRemove.push(column);
+    }
+  })
+  columnsToRemove.forEach(column => {
+    delete data[column];
+  })
+  return data;
+}
+
+export function removeRowsWithMissingValues(data){
+  let rows = data.rows;
+  let columns = data.columns;
+  let rowsToRemove = [];
+  rows.forEach(row => {
+    let missingValues = columns.filter(column => row[column] === null).length;
+    if(missingValues > 0){
+      rowsToRemove.push(row);
+    }
+  })
+}
+export function mergeTwoDatasets(data1,data2){
+  //merge on left join, key is game_id from data1 and id from data2
+  let mergedData = data1.map(row => {
+    let row2 = data2.find(row2 => row2.bgg_id === row.ID);
+    return {...row, ...row2};
+  })
 }
  
 
