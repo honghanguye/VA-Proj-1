@@ -9,6 +9,15 @@
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <!-- Include Font Awesome library -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    .slider-container {
+      display: none;
+    }
+
+    .total_value {
+      font-weight: bold;
+    }
+  </style>
 </head>
 
 <body>
@@ -27,14 +36,14 @@
     </div>
 
 
-    
+
 
     <div id="slides">
       <nav>
         <i class="fa fa-chevron-circle-down" id="next"></i>
       </nav>
-      
-      
+
+
       <div class="slide slide0">
         <div class="sidepanel">
 
@@ -198,19 +207,19 @@
             <option value="Worker Placement, Different Worker Types">Worker Placement, Different Worker Types</option>
             <option value="Zone of Control">Zone of Control</option>
           </select>
-    
+
           <label for="classes">Select class</label>
           <select id="classes" name="classes">
             <option value="categoriesClass">Categories</option>
             <option value="mechanicsClass">Mechanics</option>
           </select>
-    
+
           <button id="load_data_button" class="button">Parallel Coordinates Plot</button>
           <button id="load_data_button2" class="button">Projection (LDA) </button>
-    
-    
+
+
         </div>
-       
+
         <div class="visualizations_1">
           <div class="pcp">
 
@@ -223,8 +232,8 @@
       <div class="slide slide1">
         <div class="sidepanel_1">
           <label for="top_rank">Top___ranking</label>
-          <input type="text" id="top_rank" value="100" name="top_rank" placeholder="Enter a number" />
-          <label for = "kmeans">Select number of clusters</label>
+          <input type="text" id="top_rank" value="1000" name="top_rank" placeholder="Enter a number" />
+          <label for="kmeans">Select number of clusters</label>
           <select id="kmeans" name="kmeans">
             <option value="2">2</option>
             <option value="3">3</option>
@@ -236,151 +245,283 @@
             <option value="9">9</option>
             <option value="10">10</option>
           </select>
-          <form>
-            <label for="distance">Distance: </label>
-            <input type="range" id="distance" name="distance" min="0" max="1" step="0.01" value="0.5" oninput="updateDistanceValue(this.value)">
-            <span id="distanceValue">0.5</span>
-        </form>
-    
 
-         
-          <form>
+          <label for="distance">Select distance metric</label>
+          <select id="distance">
+            <option value="euclidian"> Eucledian</option>
+            <option value="cosine"> Cosine Similarity</option>
+          </select>
+
+
+
+
+          <form id="feature-form">
             <label for="features">Select features</label><br>
-            <input type="checkbox" id="all" name="features" value="all">
-            <label for="all">All</label><br>
-            <input type="checkbox" id="feature_name" name="features" value="feature_name">
-            <label for="feature_name">Feature Name</label><br>
-            <input type="checkbox" id="year" name="features" value="year">
-            <label for="year">Year</label><br>
-            <input type="checkbox" id="game_type" name="features" value="game_type">
-            <label for="game_type">Game Type</label><br>
-            <input type="checkbox" id="publisher" name="features" value="publisher">
-            <label for="publisher">Publisher</label><br>
-            <input type="checkbox" id="min_players" name="features" value="min_players">
-            <label for="min_players">Min Players</label><br>
-            <input type="checkbox" id="max_players" name="features" value="max_players">
-            <label for="max_players">Max Players</label><br>
+
+            <span class="total_importance">Total importance: <span class="total_value">0.00</span></span> <br>
+            <div class="feature-item">
+              <input type="checkbox" id="Year" name="features" value="Year">
+              <label for="Year">Year</label><br>
+              <div id="slider-year" class="slider-container">
+                <input type="range" min="0" max="1" step="0.01" value="0.0" class="slider" id="importance-year">
+                <label for="importance-year">Importance: <span class="slider-value">0.0</span></label>
+              </div>
+            </div>
+
+
+            <div class="feature-item">
+              <input type="checkbox" id="game_type" name="features" value="game_type">
+              <label for="game_type">Game Type</label><br>
+              <div id="slider-game_type" class="slider-container">
+                <input type="range" min="0" max="1" step="0.01" value="0.0" class="slider" id="importance-game_type">
+                <label for="importance-game_type">Importance: <span class="slider-value">0.0</span></label>
+              </div>
+            </div>
+            <div class="feature-item">
+              <input type="checkbox" id="min_players" name="features" value="min_players">
+              <label for="min_players">Min Players</label><br>
+              <div id="slider-min_players" class="slider-container">
+                <input type="range" min="0" max="1" step="0.01" value="0.0" class="slider" id="importance-min_players">
+                <label for="importance-min_players">Importance: <span class="slider-value">0.0</span></label>
+              </div>
+            </div>
+            <div class="feature-item">
+              <input type="checkbox" id="max_players" name="features" value="max_players">
+              <label for="max_players">Max Players</label><br>
+              <div id="slider-max_players" class="slider-container">
+                <input type="range" min="0" max="1" step="0.01" value="0.0" class="slider" id="importance-max_players">
+                <label for="importance-max_players">Importance: <span class="slider-value">0.0</span></label>
+              </div>
+            </div>
+
+            <div class="feature-item">
+
             <input type="checkbox" id="min_age" name="features" value="min_age">
             <label for="min_age">Min Age</label><br>
-            <input type="checkbox" id="min_time" name="features" value="min_time">
-            <label for="min_time">Min Time</label><br>
-            <input type="checkbox" id="max_time" name="features" value="max_time">
-            <label for="max_time">Max Time</label><br>
-            <input type="checkbox" id="rank" name="features" value="rank">
-            <label for="rank">Rank</label><br>
-            <input type="checkbox" id="num_votes" name="features" value="num_votes">
-            <label for="num_votes">Num Votes</label><br>
-            <input type="checkbox" id="avg_rating" name="features" value="avg_rating">
-            <label for="avg_rating">Avg Rating</label><br>
-            <input type="checkbox" id="stddev_rating" name="features" value="stddev_rating">
-            <label for="stddev_rating">Stddev Rating</label><br>
-            <input type="checkbox" id="bayes_rating" name="features" value="bayes_rating">
-            <label for="bayes_rating">Bayes Rating</label><br>
-            <input type="checkbox" id="complexity" name="features" value="complexity">
-            <label for="complexity">Complexity</label><br>
-          </form>
-          
-
-
-
-          
-
+            <div id="slider-min_age" class="slider-container">
+              <input type="range" min="0" max="1" step="0.01" value="0.0" class="slider" id="importance-min_age">
+              <label for="importance-min_age">Importance: <span class="slider-value">0.0</span></label>
+            </div>
         </div>
-        <div class="visualizations_2">
-          <div class="kmeans"></div>
+        <div class="feature-item">
+          <input type="checkbox" id="min_time" name="features" value="min_time">
+          <label for="min_time">Min Time</label><br>
+          <div id="slider-min_time" class="slider-container">
+            <input type="range" min="0" max="1" step="0.01" value="0.0" class="slider" id="importance-min_time">
+            <label for="importance-min_time">Importance: <span class="slider-value">0.0</span></label>
+          </div>
         </div>
+        <div class="feature-item">
+          <input type="checkbox" id="max_time" name="features" value="max_time">
+          <label for="max_time">Max Time</label><br>
+          <div id="slider-max_time" class="slider-container">
+            <input type="range" min="0" max="1" step="0.01" value="0.0" class="slider" id="importance-max_time">
+            <label for="importance-max_time">Importance: <span class="slider-value">0.0</span></label>
+          </div>
+        </div>
+        <div class="feature-item">
+          <input type="checkbox" id="rank" name="features" value="rank">
+          <label for="rank">Rank</label><br>
+          <div id="slider-rank" class="slider-container">
+            <input type="range" min="0" max="1" step="0.01" value="0.0" class="slider" id="importance-rank">
+            <label for="importance-rank">Importance: <span class="slider-value">0.0</span></label>
+          </div>
+        </div>
+        <div class="feature-item">
+          <input type="checkbox" id="num_votes" name="features" value="num_votes">
+          <label for="num_votes">Num Votes</label><br>
+          <div id="slider-num_votes" class="slider-container">
+            <input type="range" min="0" max="1" step="0.01" value="0.0" class="slider" id="importance-num_votes">
+            <label for="importance-num_votes">Importance: <span class="slider-value">0.0</span></label>
+          </div>
+        </div>
+        <div class="feature-item">
+          <input type="checkbox" id="avg_rating" name="features" value="avg_rating">
+          <label for="avg_rating">Avg Rating</label><br>
+          <div id="slider-avg_rating" class="slider-container">
+            <input type="range" min="0" max="1" step="0.01" value="0.0" class="slider" id="importance-avg_rating">
+            <label for="importance-avg_rating">Importance: <span class="slider-value">0.0</span></label>
+          </div>
+        </div>
+        <div class="feature-item">
+          <input type="checkbox" id="stddev_rating" name="features" value="stddev_rating">
+          <label for="stddev_rating">Stddev Rating</label><br>
+          <div id="slider-stddev_rating" class="slider-container">
+            <input type="range" min="0" max="1" step="0.01" value="0.0" class="slider" id="importance-stddev_rating">
+            <label for="importance-stddev_rating">Importance: <span class="slider-value">0.0</span></label>
+          </div>
+        </div>
+        <div class="feature-item">
+          <input type="checkbox" id="bayes_rating" name="features" value="bayes_rating">
+          <label for="bayes_rating">Bayes Rating</label><br>
+          <div id="slider-bayes_rating" class="slider-container">
+            <input type="range" min="0" max="1" step="0.01" value="0.0" class="slider" id="importance-bayes_rating">
+            <label for="importance-bayes_rating">Importance: <span class="slider-value">0.0</span></label>
+          </div>
+        </div>
+        <div class="feature-item">
+          <input type="checkbox" id="complexity" name="features" value="complexity">
+          <label for="complexity">Complexity</label><br>
+          <div id="slider-complexity" class="slider-container">
+            <input type="range" min="0" max="1" step="0.01" value="0.0" class="slider" id="importance-complexity">
+            <label for="importance-complexity">Importance: <span class="slider-value">0.0</span></label>
+          </div>
+        </div>
+        </form>
+        <button id="load_data_button_kmeans" class="button">K-means</button>
+
+
+
+
+
+
       </div>
-        <div class= "slide2 slide2">
-          <div class="visualizations_3">
-            <div class="network"></div>
-          </div>
-        </div>
-        <div class= "slide3 slide3">
-          <div class="visualizations_4">
-            <div class="full_system"></div>
-          </div>
-          </div>
+      <div class="visualizations_2">
+        <div class="kmeans"></div>
       </div>
-
     </div>
-  <script >
-    $(document).ready(function() {
+    <div class="slide2 slide2">
+      <div class="visualizations_3">
+        <div class="network"></div>
+      </div>
+    </div>
+    <div class="slide3 slide3">
+      <div class="visualizations_4">
+        <div class="full_system"></div>
+      </div>
+    </div>
+  </div>
+
+  </div>
+  <script>
+    $(document).ready(function () {
       var number = 0;
-      $("#next").click(function(){
+      $("#next").click(function () {
         $(".slide" + number).slideUp();
         $(".menu" + number).removeClass('current');
         $(".slide" + (number + 1)).slideDown();
         $(".menu" + (number + 1)).addClass('current');
-    
-        if (number === 2){
+
+        if (number === 2) {
           $("#next").css('transform', 'rotate(180deg)');
         }
-    
-        if (number === 3){
+
+        if (number === 3) {
           $(".slide3").slideUp();
           $(".menu3").removeClass('current');
           $(".slide0").slideDown();
           $(".menu0").addClass('current');
           $("#next").css('transform', 'rotate(0deg)');
-    
+
           number = -1;
         }
-    
+
         number += 1;
       });
-    
-      $(".menu0").click(function() {
+
+      $(".menu0").click(function () {
         $(".slide" + number).slideUp();
         $(".menu" + number).removeClass('current');
         $(".menu0").addClass('current');
         $(".slide0").slideDown();
-    
+
         number = 0;
-    
+
         $("#next").css('transform', 'rotate(0deg)');
       });
-    
-      $(".menu1").click(function() {
+
+      $(".menu1").click(function () {
         $(".slide" + number).slideUp();
         $(".menu" + number).removeClass('current');
         $(".menu1").addClass('current');
         $(".slide1").slideDown();
-    
+
         number = 1;
-    
+
         $("#next").css('transform', 'rotate(0deg)');
       });
-    
-      $(".menu2").click(function() {
+
+      $(".menu2").click(function () {
         $(".slide" + number).slideUp();
         $(".menu" + number).removeClass('current');
         $(".menu2").addClass('current');
         $(".slide2").slideDown();
-    
+
         number = 2;
-    
+
         $("#next").css('transform', 'rotate(0deg)');
       });
-    
-      $(".menu3").click(function() {
+
+      $(".menu3").click(function () {
         $(".slide" + number).slideUp();
         $(".menu" + number).removeClass('current');
         $(".menu3").addClass('current');
         $(".slide3").slideDown();
-    
+
         number = 3;
-    
+
         $("#next").css('transform', 'rotate(180deg)');
       });
     });
 
   </script>
 
+
   <script>
-    function updateDistanceValue(value) {
-        document.getElementById('distanceValue').innerText = value;
-    }
+    document.addEventListener('DOMContentLoaded', function () {
+        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        const sliders = document.querySelectorAll('input[type="range"]');
+
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', handleCheckboxChange);
+        });
+
+        sliders.forEach(slider => {
+            slider.addEventListener('input', handleSliderChange);
+        });
+
+        function handleCheckboxChange() {
+            const parentDiv = this.closest('.feature-item');
+            const sliderContainer = parentDiv.querySelector('.slider-container');
+            const slider = sliderContainer.querySelector('input[type="range"]');
+            const sliderValue = sliderContainer.querySelector('.slider-value');
+            
+            if (this.checked) {
+                slider.value = 0;
+                sliderValue.textContent = '0.00';
+                sliderContainer.style.display = 'block';
+            } else {
+                sliderContainer.style.display = 'none';
+                slider.value = 0;
+                sliderValue.textContent = '0.00';
+            }
+            checkTotalImportance();  // Update total importance
+        }
+
+        function handleSliderChange() {
+            const valueSpan = this.nextElementSibling.querySelector('.slider-value');
+            valueSpan.textContent = parseFloat(this.value).toFixed(2);  // Update slider value display
+            checkTotalImportance();  // Update total importance
+        }
+
+        function checkTotalImportance() {
+            let totalImportance = 0;
+            sliders.forEach(slider => {
+                
+                    totalImportance += parseFloat(slider.value);  // Sum up the importance values of checked sliders
+                
+            });
+           
+            document.querySelector('.total_value').textContent = totalImportance.toFixed(2);
+            console.log("total", totalImportance);
+
+            if (totalImportance > 1) {
+                alert('The total importance value exceeds 1. Please adjust the sliders.');  // Alert if total importance exceeds 1
+            }
+        }
+    });
 </script>
+
 </body>
 
 </html>

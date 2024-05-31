@@ -43,6 +43,19 @@ draw_scatterplot(ldaData.scatterplot);
 };
 socket.on("freshLDA", handleLDA);
 
+let requestKmeansData = (parameters) =>{
+  console.log(`Requesting data with this parameters: `, parameters)
+ 
+  socket.emit("getRelevantData",{parameters});
+}
+
+let handleKmeansData = (payload) =>{
+  console.log("Data received from server:", payload);
+
+  
+}
+socket.on("RelevantData", handleKmeansData);
+
 
 
 /**
@@ -94,6 +107,57 @@ document.addEventListener("DOMContentLoaded", function() {
 /**
  * Object that will store the loaded data.
  */
+
+document.addEventListener("DOMContentLoaded", function() {
+  document.getElementById('load_data_button_kmeans').addEventListener('click', function() {
+    
+    const topRank = document.getElementById('top_rank').value;
+  
+    // Get the selected number of clusters
+    const numClusters = document.getElementById('kmeans').value;
+  
+    // Get the selected distance metric
+    const distanceMetric = document.getElementById('distance').value;
+  
+    // Initialize an object to store feature data
+    let features = [];
+  
+    // Get all feature items
+    const featureItems = document.querySelectorAll('.feature-item');
+  
+    // Loop through each feature item
+    featureItems.forEach(item => {
+      const checkbox = item.querySelector('input[type="checkbox"]');
+      const slider = item.querySelector('input[type="range"]');
+      if (checkbox.checked) {
+        features.push({
+          name: checkbox.value,
+          importance: slider.value
+        });
+      
+          
+      }
+          //importance: slider.value
+        });
+        const parameters = {
+          top_rank: topRank,
+          k: numClusters,
+          features: features.map(feature => feature.name), // Extract names from features
+  importance: features.map(feature => feature.importance), // Extract importance values
+          distanceFunction: distanceMetric
+        };
+        requestKmeansData(parameters)
+      
+}); 
+  
+    // Log the captured values (You can replace this with your actual data handling logic)
+    
+   
+  });
+
+
+
+
 let ldaData ={
   scatterplot : undefined,
 };

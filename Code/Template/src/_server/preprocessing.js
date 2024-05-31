@@ -161,9 +161,93 @@ export function mergeTwoDatasets(data1,data2){
     return {...row, ...row2};
   })
 }
+
+/**
+ * @param {Array} data - The array of game objects.
+ * @param {Array} columns - The array of column names to extract.
+ * @returns {Array} - An array containing the relevant columns from the data.
+ */
+
  
+export function extractRelevantColumns(data, parameters) {
+  return data.map(row => {
+    let newRow = {};
+    newRow['Name'] = row['Name'];
+    parameters.forEach(column => {
+      if (column === 'game_type') {
+        // Extract 8 binary columns
+        let gameType = row[column];
+        
+        newRow['Abstract_Game'] = gameType.includes('Abstract Game') ? 1 : 0;
+        newRow['Children_Game'] = gameType.includes("Children's Game") ? 1 : 0;
+        newRow['Customizable'] = gameType.includes('Customizable') ? 1 : 0;
+        newRow['Family_Game'] = gameType.includes('Family Game') ? 1 : 0;
+        newRow['Party_Game'] = gameType.includes('Party Game') ? 1 : 0;
+        newRow['Strategy_Game'] = gameType.includes('Strategy Game') ? 1 : 0;
+        newRow['Thematic'] = gameType.includes('Thematic') ? 1 : 0;
+        newRow['War_Game'] = gameType.includes('War Game') ? 1 : 0;
+      } else {
+        newRow[column] = row[column];
+      }
+    });
+    
+    return newRow;
+  });
+ 
+}
 
+export function normalizeData(data) {
+  if (!Array.isArray(data) || data.length === 0) {
+    throw new Error('Data should be a non-empty array');
+  }
 
+  // Extract column names from the first data object
+  let columns = Object.keys(data[0]);
+  let normalizedData = {};
 
+  columns.forEach(column => {
+    if (column !== 'Name') {
+      let values = data.map(row => parseFloat(row[column]));
+      
+      // Filter out non-numeric values
+      values = values.filter(value => !isNaN(value));
 
+      if (values.length === 0) {
+        normalizedData[column] = [];
+        return;
+      }
+
+      let min = Math.min(...values);
+      let max = Math.max(...values);
+
+      // Handle case where max and min are the same to avoid division by zero
+      if (max === min) {
+        normalizedData[column] = data.map(row => 0); // Or handle differently
+      } else {
+        normalizedData[column] = data.map(row => {
+          let value = parseFloat(row[column]);
+          return isNaN(value) ? 0 : (value - min) / (max - min);
+        });
+      }
+    }
+  });
+
+  return normalizedData;
+}
+export function transformToKMeansInput(normalizedData) {
+  const keys = Object.keys(normalizedData);
+  const numRows = normalizedData[keys[0]].length;
+  
+  let kMeansInput = [];
+  
+  for (let i = 0; i < numRows; i++) {
+    let dataPoint = [];
+    keys.forEach(key => {
+      dataPoint.push(normalizedData[key][i]);
+    });
+    kMeansInput.push(dataPoint);
+  }
+  
+  return kMeansInput;
+}
 

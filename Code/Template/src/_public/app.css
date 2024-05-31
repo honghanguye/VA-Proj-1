@@ -153,9 +153,13 @@ head,
     background: rgb(255, 255, 255);
     padding: 20px;
     overflow: auto ;
+    grid-template-columns: 50% 50%;
+    grid-template-areas: "pcp scatterplot_LDA";
+
+
     
     .pcp {
-     
+     grid-area: pcp ;
       justify-self: center;
       height: 50%;
       margin: 10px;
@@ -163,7 +167,7 @@ head,
     }
     
     .scatterplot_LDA {
-      
+      grid-area: scatterplot_LDA;
       justify-self: center;
      height: 50%;
       margin: 10px;
@@ -181,6 +185,7 @@ head,
     display: grid;
     grid-template-columns: 20% 80%;
     grid-template-areas: "sidepanel visualizations";
+    overflow: visible;
 
     .sidepanel_1 {
       background-color: var(--blue-munsell);
@@ -188,6 +193,8 @@ head,
       grid-area: sidepanel;
       border: #ccc 1px solid;
       padding: 20px;
+  height: 650px	;
+      overflow-y: scroll;
     }
     
     

@@ -5,10 +5,14 @@ import { print_clientConnected, print_clientDisconnected } from "./static/utils.
 // const preprocessing = require("./preprocessing.js")
 import { is_below_max_weight, parse_numbers, calc_bmi } from "./preprocessing.js"
 import { filterTopRankedGames, selectGamesByCategory, selectGamesByMechanic, in_top_5_popular_categories, in_top_5_popular_mechanics } from "./preprocessing.js";
+import { extractRelevantColumns,normalizeData, transformToKMeansInput} from "./preprocessing.js";
+import { kMeans } from "./kmeans.js";
 import { LDA } from "./druidExample.js";
+import { get } from "http";
 
 const file_path = "./data/"
 const file_name = "boardgames_100.json"
+const file_name_csv = "cleaned data ver 1.csv"
 
 
 
@@ -61,29 +65,6 @@ export function setupConnection(socket) {
 
 
 
-  /**
-   * # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-   * 
-   * !!!!! Here an below, you can/should edit the code  !!!!!
-   * - you can modify the getData listener
-   * - you can add other listeners for other functionalities
-   * 
-   * # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
-   */
-
-
-  /**
-   * Listener that is called, if a message was sent with the topic "getData"
-   * 
-   * In this case, the following is done:
-   * - Read in the data (.csv in this case) a a stream
-   *      (Stream -> data is read in line by line)
-   * - Do data preprocessing while reading in:
-   *      - Convert values, that can be represented as numbers to numbers
-   *      - Calculate the BMI for every data row (person)
-   *      - Filtering: if the row has a value, that contradicts the filtering parameters, data row will be excluded
-   *          (in this case: weight should not be larger than the max_weight filter-parameter)
-   */
   socket.on("getData", (obj) => {
     console.log(`Data request with properties ${JSON.stringify(obj)}...`)
 
@@ -153,6 +134,33 @@ export function setupConnection(socket) {
     )
   })
 
+  socket.on("getRelevantData", (obj) => {
+    let parameters = obj.parameters;
+  
+    let data = [];
+    fs.createReadStream(file_path + file_name_csv)
+      .pipe(parse({ delimiter: ',', columns: true }))
+      .on('data', (row) => {
+        data.push(row);
+      })
+      .on('end', () => {
+
+        let relevantData = extractRelevantColumns(data, parameters.features);
+        relevantData = filterTopRankedGames(relevantData, parameters.top_rank);
+        relevantData = normalizeData(relevantData);
+        relevantData = transformToKMeansInput(relevantData);
+
+        relevantData = kMeans(relevantData, parameters.k, parameters.importance,parameters.distanceFunction);
+
+        
+        console.log(relevantData);
+        socket.emit("RelevantData", {
+          timestamp: new Date().getTime(),
+          data: relevantData,
+          parameters: parameters,
+        });
+      });
+  });
 
 }
 
@@ -183,3 +191,4 @@ function applyFilter(data, filterName, filterValue) {
       return data;
   }
 }
+

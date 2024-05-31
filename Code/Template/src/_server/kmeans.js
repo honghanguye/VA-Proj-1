@@ -29,7 +29,7 @@ export function getExampleKMeans() {
  * @param {[number]} contributionPerVariable containing the percentage contribution per variable
  * @returns {{centroids: [number][], dataPoints: {variableValues:[number],centroidIndex:number}[]}} the {k} cluster centroids and the assignment of data to centroid
  */
-export function kMeans(dataPointsToCluster, k, contributionPerVariable) {
+export function kMeans(dataPointsToCluster, k, contributionPerVariable, distanceFunction) {
 
     //Add the required fields to the object
     let dataObjects = dataPointsToCluster.map(dataPoint => {
@@ -41,7 +41,7 @@ export function kMeans(dataPointsToCluster, k, contributionPerVariable) {
 
     //iteratively move the centroids of the clusters closer to the center of their cluster center 
     while (hasChanged) {
-        dataObjects = assignDatapointsToCentroids(dataObjects, centroids, contributionPerVariable);
+        dataObjects = assignDatapointsToCentroids(dataObjects, centroids, contributionPerVariable, distanceFunction);
         const result = calculateNewCentroids(dataObjects, centroids, contributionPerVariable);
         centroids = result.centroids;
         hasChanged = result.centroidsChanged;
@@ -79,6 +79,29 @@ function distanceEuclidianContribution(dataPoint1, dataPoint2, contributionPerVa
     return Math.sqrt(sumDistance);
 }
 
+function distanceCosineSimilarity(dataPoint1, dataPoint2, contributionPerVariable) {
+    if (dataPoint1.length !== dataPoint2.length || dataPoint1.length !== contributionPerVariable.length) {
+        throw new Error("All input arrays must have the same length.");
+        
+    }
+
+    let dotProduct = 0;
+    let magnitude1 = 0;
+    let magnitude2 = 0;
+
+    for (let i = 0; i < dataPoint1.length; i++) {
+        dotProduct += dataPoint1[i] * dataPoint2[i] * contributionPerVariable[i];
+        magnitude1 += Math.pow(dataPoint1[i], 2) * contributionPerVariable[i];
+        magnitude2 += Math.pow(dataPoint2[i], 2) * contributionPerVariable[i];
+    }
+
+    if (magnitude1 === 0 || magnitude2 === 0) {
+        return 0; // To handle the case of zero magnitude to avoid division by zero
+    }
+
+    return dotProduct / (Math.sqrt(magnitude1) * Math.sqrt(magnitude2));
+}
+
 
 /**
  * Assigns each data point according to the given distance function to the nearest centroid.
@@ -91,14 +114,20 @@ function distanceEuclidianContribution(dataPoint1, dataPoint2, contributionPerVa
 function assignDatapointsToCentroids(
     dataObjects,
     centroids,
-    contributionPerVariable
+    contributionPerVariable, distanceFunction
 ) {
     return dataObjects.map(dataObject => {
         let minDistance = Infinity;
         let centroidIndex = -1;
         //Find the new centroid
         centroids.forEach((centroid, index) => {
-            const distance = distanceEuclidianContribution(dataObject.dataPoint, centroid, contributionPerVariable);
+            let distance;
+            if(distanceFunction === 'euclidian'){
+                distance = distanceEuclidianContribution(dataObject.dataPoint, centroid, contributionPerVariable);
+            } else if(distanceFunction === 'cosine'){
+                distance = distanceCosineSimilarity(dataObject.dataPoint, centroid, contributionPerVariable);
+            }
+
             if (distance < minDistance) {
                 minDistance = distance;
                 centroidIndex = index;
