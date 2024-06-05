@@ -62,7 +62,8 @@ export function LDA(data, useClasses) {
     for (let j = 0; j < cols; j++) {
       row.push(result._data[i * cols + j]);
     }
-    row.push(classes[i]); // or classes_2[i] depending on your usage
+    row.push(classes[i]); 
+    
     row.push(classes_2[i]);
     row.push(title[i]);
     dataArray.push(row);
@@ -71,5 +72,6 @@ export function LDA(data, useClasses) {
   console.log("Transformed Data Array:", dataArray);
 
   // Transform the array into the desired format
+
   return dataArray;
 }

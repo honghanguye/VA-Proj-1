@@ -3,6 +3,7 @@ import "./app.css";
 import { configs } from "../_server/static/configs.js";
 import { drawPcp } from "./newpcp.js";
 import { draw_scatterplot } from "./scatterplot.js";
+import { drawKmeansScatterplot } from "./kmeans_scatterplot.js";
 import * as d3 from "d3";
 
 let hostname = window.location.hostname;
@@ -43,17 +44,21 @@ draw_scatterplot(ldaData.scatterplot);
 };
 socket.on("freshLDA", handleLDA);
 
-let requestKmeansData = (parameters) =>{
+let requestKmeansData = (parameters) =>{ 
   console.log(`Requesting data with this parameters: `, parameters)
  
   socket.emit("getRelevantData",{parameters});
 }
 
 let handleKmeansData = (payload) =>{
-  console.log("Data received from server:", payload);
+ 
+  kmeansData.kmeans_scatterplot = payload.data;
+  console.log(" Data : ", kmeansData.kmeans_scatterplot )
+  drawKmeansScatterplot(kmeansData.kmeans_scatterplot);
 
   
 }
+
 socket.on("RelevantData", handleKmeansData);
 
 
@@ -111,7 +116,7 @@ document.addEventListener("DOMContentLoaded", function() {
 document.addEventListener("DOMContentLoaded", function() {
   document.getElementById('load_data_button_kmeans').addEventListener('click', function() {
     
-    const topRank = document.getElementById('top_rank').value;
+    const topRank = document.getElementById('top_rank_kmeans').value;
   
     // Get the selected number of clusters
     const numClusters = document.getElementById('kmeans').value;
@@ -164,3 +169,10 @@ let ldaData ={
 let data = {
   pcp: undefined,
 };
+
+let kmeansData = {
+  kmeans_scatterplot: undefined,
+};
+
+
+

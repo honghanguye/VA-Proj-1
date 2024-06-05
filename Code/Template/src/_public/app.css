@@ -179,7 +179,7 @@ head,
   
   }
   .slide1{
-    background-color: blueviolet;
+
     display: none;
     position: relative;
     display: grid;
@@ -206,6 +206,13 @@ head,
     background: rgb(255, 255, 255);
     padding: 20px;
     overflow: auto ;
+
+    .kmeans_scatterplot {
+      justify-self: center;
+      height: 70%;
+      margin: 10px;
+    }
+
   }
 
 

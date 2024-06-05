@@ -2,10 +2,11 @@
 import { parse } from "csv-parse";
 import * as fs from "fs"
 import { print_clientConnected, print_clientDisconnected } from "./static/utils.js"
+import { TSNE } from "./tsne.js";
 // const preprocessing = require("./preprocessing.js")
-import { is_below_max_weight, parse_numbers, calc_bmi } from "./preprocessing.js"
+
 import { filterTopRankedGames, selectGamesByCategory, selectGamesByMechanic, in_top_5_popular_categories, in_top_5_popular_mechanics } from "./preprocessing.js";
-import { extractRelevantColumns,normalizeData, transformToKMeansInput} from "./preprocessing.js";
+import { extractRelevantColumns,normalizeData, transformToKMeansInput,transformFromKMeansOutput} from "./preprocessing.js";
 import { kMeans } from "./kmeans.js";
 import { LDA } from "./druidExample.js";
 import { get } from "http";
@@ -144,16 +145,18 @@ export function setupConnection(socket) {
         data.push(row);
       })
       .on('end', () => {
-
-        let relevantData = extractRelevantColumns(data, parameters.features);
-        relevantData = filterTopRankedGames(relevantData, parameters.top_rank);
+        let relevantData = filterTopRankedGames(data, parameters.top_rank);
+         relevantData = extractRelevantColumns(relevantData, parameters.features);
+        
         relevantData = normalizeData(relevantData);
         relevantData = transformToKMeansInput(relevantData);
 
         relevantData = kMeans(relevantData, parameters.k, parameters.importance,parameters.distanceFunction);
-
+        // let tsneData = TSNE(relevantData);
         
-        console.log(relevantData);
+        
+        // console.log(relevantData);
+        // console.log(tsneData);
         socket.emit("RelevantData", {
           timestamp: new Date().getTime(),
           data: relevantData,

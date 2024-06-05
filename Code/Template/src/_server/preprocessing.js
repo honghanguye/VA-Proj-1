@@ -203,7 +203,7 @@ export function normalizeData(data) {
 
   // Extract column names from the first data object
   let columns = Object.keys(data[0]);
-  let normalizedData = {};
+  let normalizedData = data.map(row => ({ Name: row.Name })); // Initialize with names
 
   columns.forEach(column => {
     if (column !== 'Name') {
@@ -213,7 +213,7 @@ export function normalizeData(data) {
       values = values.filter(value => !isNaN(value));
 
       if (values.length === 0) {
-        normalizedData[column] = [];
+        normalizedData.forEach(row => row[column] = 0);
         return;
       }
 
@@ -222,11 +222,11 @@ export function normalizeData(data) {
 
       // Handle case where max and min are the same to avoid division by zero
       if (max === min) {
-        normalizedData[column] = data.map(row => 0); // Or handle differently
+        normalizedData.forEach(row => row[column] = 0);
       } else {
-        normalizedData[column] = data.map(row => {
+        data.forEach((row, index) => {
           let value = parseFloat(row[column]);
-          return isNaN(value) ? 0 : (value - min) / (max - min);
+          normalizedData[index][column] = isNaN(value) ? 0 : (value - min) / (max - min);
         });
       }
     }
@@ -234,20 +234,37 @@ export function normalizeData(data) {
 
   return normalizedData;
 }
+
 export function transformToKMeansInput(normalizedData) {
-  const keys = Object.keys(normalizedData);
-  const numRows = normalizedData[keys[0]].length;
-  
-  let kMeansInput = [];
-  
-  for (let i = 0; i < numRows; i++) {
-    let dataPoint = [];
-    keys.forEach(key => {
-      dataPoint.push(normalizedData[key][i]);
-    });
-    kMeansInput.push(dataPoint);
-  }
-  
-  return kMeansInput;
+  return normalizedData.map(row => ({
+    name: row.Name,
+    dataPoint: Object.keys(row).filter(key => key !== 'Name').map(key => row[key])
+  }));
 }
+
+
+export function transformFromKMeansOutput(kMeansResults, originalKeys) {
+  const transformedData = {};
+
+  // Initialize the transformedData object with empty arrays for each key
+  originalKeys.forEach(key => {
+    transformedData[key] = [];
+  });
+
+  // Populate the transformedData object
+  kMeansResults.forEach(result => {
+    result.dataPoint.forEach((value, index) => {
+      transformedData[originalKeys[index]].push(value);
+    });
+  });
+
+  // Add centroid index to the transformedData as the last feature column
+  
+  transformedData.centroidIndex = kMeansResults.map(result => result.centroidIndex);
+
+
+  return transformedData;
+}
+
+
 

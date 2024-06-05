@@ -231,8 +231,8 @@
       </div>
       <div class="slide slide1">
         <div class="sidepanel_1">
-          <label for="top_rank">Top___ranking</label>
-          <input type="text" id="top_rank" value="1000" name="top_rank" placeholder="Enter a number" />
+          <label for="top_rank_kmeans">Top___ranking</label>
+          <input type="text" id="top_rank_kmeans" value="1000" name="top_rank_kmeans" placeholder="Enter a number" />
           <label for="kmeans">Select number of clusters</label>
           <select id="kmeans" name="kmeans">
             <option value="2">2</option>
@@ -376,8 +376,10 @@
 
 
       </div>
+
       <div class="visualizations_2">
-        <div class="kmeans"></div>
+      
+        <div class="kmeans_scatterplot"></div>
       </div>
     </div>
     <div class="slide2 slide2">
@@ -513,7 +515,6 @@
             });
            
             document.querySelector('.total_value').textContent = totalImportance.toFixed(2);
-            console.log("total", totalImportance);
 
             if (totalImportance > 1) {
                 alert('The total importance value exceeds 1. Please adjust the sliders.');  // Alert if total importance exceeds 1

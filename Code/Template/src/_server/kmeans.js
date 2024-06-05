@@ -2,6 +2,8 @@
 //Implementation of a multidimensional k-means algorithm. Assumes that all values are numerical and between 0 and 1. 
 //Uses a modified euclidiant distance where seperate dimensions get scales according to user-set preferences
 
+
+
 export function getExampleKMeans() {
 
     let dataPoint1 = [0.3,0.1,0.1];
@@ -29,11 +31,13 @@ export function getExampleKMeans() {
  * @param {[number]} contributionPerVariable containing the percentage contribution per variable
  * @returns {{centroids: [number][], dataPoints: {variableValues:[number],centroidIndex:number}[]}} the {k} cluster centroids and the assignment of data to centroid
  */
-export function kMeans(dataPointsToCluster, k, contributionPerVariable, distanceFunction) {
-
+export function kMeans(dataPointsToCluster, k,contributionPerVariable, distanceFunction) { 
     //Add the required fields to the object
+    dataPointsToCluster.forEach(point => {
+        let name = point.name;
+    });
     let dataObjects = dataPointsToCluster.map(dataPoint => {
-        return { dataPoint: dataPoint, centroidIndex: 0 };
+        return { dataPoint: dataPoint.dataPoint, centroidIndex: 0 };
     })
     //initialize with random centroids
     let centroids = getRandomCentroids(dataObjects, k);
@@ -46,7 +50,26 @@ export function kMeans(dataPointsToCluster, k, contributionPerVariable, distance
         centroids = result.centroids;
         hasChanged = result.centroidsChanged;
     }
+    // add the name of the data point to the object
+    dataObjects = dataObjects.map((dataObject, index) => ({
+        
+        centroidIndex: dataObject.centroidIndex, 
+        variableValues: dataObject.dataPoint, 
+        name: dataPointsToCluster[index].name 
+    }));
+    // add cluster name to each centroid
+    centroids = centroids.map((centroid, index) => ({
+        centroidIndex: index,
+        variableValues: centroid,
+        name: `Cluster ${index}`
+    }));
+    // merge the data points and centroids
+    dataObjects = dataObjects.concat(centroids);
+
+
     return dataObjects;
+    
+
 }
 
 /**
@@ -80,10 +103,7 @@ function distanceEuclidianContribution(dataPoint1, dataPoint2, contributionPerVa
 }
 
 function distanceCosineSimilarity(dataPoint1, dataPoint2, contributionPerVariable) {
-    if (dataPoint1.length !== dataPoint2.length || dataPoint1.length !== contributionPerVariable.length) {
-        throw new Error("All input arrays must have the same length.");
-        
-    }
+    
 
     let dotProduct = 0;
     let magnitude1 = 0;
